@@ -2,7 +2,7 @@ public class Explorador {
     private final int ARRIBA = 1;
     private final int ABAJO = 2;
     private final int IZQUIERDA = 3;
-    private final int DERECHA =4;
+    private final int DERECHA = 4;
     private String nombre;
     private Posicion posicionActual;
 
@@ -10,6 +10,8 @@ public class Explorador {
         this.nombre = nombre;
         int fila = (int) (Math.random() *6);
         this.posicionActual = new Posicion(fila,0);
+    }
+    public Explorador(){
     }
 
     public String getNombre() {
