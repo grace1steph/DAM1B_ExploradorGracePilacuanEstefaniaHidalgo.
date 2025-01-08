@@ -1,4 +1,5 @@
 import java.util.Random;
+import java.util.Scanner;
 
 public class Mapa {
     private char[][] tablero;
@@ -28,23 +29,23 @@ public class Mapa {
             } while (tablero[trampa.getCoordenadaFila()][trampa.getCoordenadaCol()] != ' ');
             posicionTrampas[i] = trampa;
             tablero[trampa.getCoordenadaFila()][trampa.getCoordenadaCol()] = 'T';
-
-            //Colocar los enemigos en el tablero
-            listadoEnemigos = new Enemigo[3];
-            for (int j = 0; j <3 ; j++) {
-                Enemigo listado;
-                do {
-                    listado = new Enemigo();
-                } while (tablero[listado.getPosicionActual().getCoordenadaFila()][listado.getPosicionActual().getCoordenadaCol()] != ' ');
-                listadoEnemigos[i]= listado;
-                tablero[listado.getPosicionActual().getCoordenadaFila()][listado.getPosicionActual().getCoordenadaCol()] = 'E';
-            }
-
-            // colocar el Jugador
-            Explorador explorador = new Explorador();
-            posJugador = new Posicion(explorador.getPosicionActual().getCoordenadaFila(),explorador.getPosicionActual().getCoordenadaCol());
-            tablero[posJugador.getCoordenadaFila()][posJugador.getCoordenadaCol()] = 'J';
         }
+        //Colocar los enemigos en el tablero
+        listadoEnemigos = new Enemigo[3];
+        for (int j = 0; j < 3 ; j++) {
+            Enemigo listado;
+            do {
+                listado = new Enemigo();
+            } while (tablero[listado.getPosicionActual().getCoordenadaFila()][listado.getPosicionActual().getCoordenadaCol()] != ' ');
+            listadoEnemigos[j]= listado;
+            tablero[listado.getPosicionActual().getCoordenadaFila()][listado.getPosicionActual().getCoordenadaCol()] = 'E';
+        }
+
+        // colocar el Jugador
+        Explorador explorador = new Explorador();
+        posJugador = new Posicion(explorador.getPosicionActual().getCoordenadaFila(),explorador.getPosicionActual().getCoordenadaCol());
+        tablero[posJugador.getCoordenadaFila()][posJugador.getCoordenadaCol()] = 'J';
+        iniciarJuego();
     }
 
     public char[][] getTablero() {
@@ -88,7 +89,7 @@ public class Mapa {
             return false;
         }
         tablero[posicionAnt.getCoordenadaFila()][posicionAnt.getCoordenadaCol()] = ' ';
-        tablero[posJugador.getCoordenadaFila()][posJugador.getCoordenadaCol()] = 'j';
+        tablero[posJugador.getCoordenadaFila()][posJugador.getCoordenadaCol()] = 'J';
         return true;
     }
 
@@ -100,6 +101,43 @@ public class Mapa {
             listadoEnemigos[i].moverse();
             tablero[enemigo.getPosicionActual().getCoordenadaFila()][enemigo.getPosicionActual().getCoordenadaCol()] = 'E';
         }
+    }
+    public void iniciarJuego() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Introduce el nombre del explorador:");
+        String nombre = sc.nextLine();
+        Explorador explorador = new Explorador(nombre);
+        boolean desarrolloDelJuego = true;
+        while (desarrolloDelJuego) {
+            mostrar();
 
+            System.out.println("\nElige la dirección para moverte 1. Arriba 2. Abajo 3. Derecha 4. Izquierda): ");
+            int direccion = sc.nextInt();
+            Posicion posicionAnterior = new Posicion(explorador.getPosicionActual().getCoordenadaFila(), explorador.getPosicionActual().getCoordenadaCol());
+            explorador.moverse(direccion);
+
+            char celdaActual = getTablero()[explorador.getPosicionActual().getCoordenadaFila()][explorador.getPosicionActual().getCoordenadaCol()];
+            if (celdaActual == 'T') {
+                System.out.println("Caiste en una trampa! Has perdido");
+                break;
+            } else if (celdaActual == 'E') {
+                System.out.println("Has sido atrapado por el enemigo! Perdiste.");
+                break;
+            } else if (posicionAnterior.equals(getPosTesoro())) {
+                System.out.println("Encontraste el tesoro. Has ganado!");
+                break;
+            }
+
+//            for (Enemigo enemigo : getListadoEnemigos()) {
+//                if (enemigo.getPosicionActual().equals(explorador.getPosicionActual())) {
+//                    System.out.println("Has sido atrapado por el enemigo. Has perdido!");
+//                    desarrolloDelJuego = false;
+//                    break;
+//                }
+//            }
+            actualizaPosicionExplorador(posicionAnterior);
+            actualizarEnemigos();
+        }
+        System.out.println("Gracias por jugar :) ");
     }
 }
